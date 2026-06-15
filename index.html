@@ -6,72 +6,154 @@
 <title>Fut Analytics</title>
 
 <style>
-body{
-    background:#111;
-    color:white;
-    font-family:Arial,sans-serif;
+*{
     margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#0f172a;
+    color:white;
+    font-family:Arial, sans-serif;
     padding:20px;
 }
 
 h1{
     text-align:center;
-    color:#00ff66;
+    color:#22c55e;
+    margin-bottom:20px;
 }
 
 #jogos{
-    margin-top:20px;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
 }
 
 .card{
-    background:#222;
+    background:#1e293b;
+    border-radius:12px;
     padding:15px;
-    margin-bottom:15px;
-    border-radius:10px;
-    border-left:4px solid #00ff66;
+    box-shadow:0 2px 10px rgba(0,0,0,.3);
+}
+
+.ao-vivo{
+    border-left:5px solid red;
+}
+
+.encerrado{
+    border-left:5px solid #22c55e;
+}
+
+.agendado{
+    border-left:5px solid #f59e0b;
+}
+
+.times{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:10px 0;
+}
+
+.time{
+    width:40%;
+    text-align:center;
+}
+
+.time img{
+    width:50px;
+    height:50px;
+}
+
+.placar{
+    font-size:28px;
+    font-weight:bold;
 }
 
 .status{
-    color:#00ff66;
+    text-align:center;
+    margin-top:10px;
     font-weight:bold;
+}
+
+.competicao{
+    text-align:center;
+    color:#94a3b8;
+    margin-top:5px;
+    font-size:14px;
 }
 </style>
 </head>
+
 <body>
 
 <h1>⚽ FUT ANALYTICS</h1>
 
-<h2>Jogos do Dia</h2>
-
 <div id="jogos">
-    <p>Carregando jogos...</p>
+    Carregando jogos...
 </div>
 
 <script>
 async function carregarJogos() {
-    try {
-        const resposta = await fetch('/api/matches');
-        const dados = await resposta.json();
 
-        const container = document.getElementById('jogos');
-        container.innerHTML = '';
+    const resposta = await fetch('/api/matches');
+    const dados = await resposta.json();
 
-        dados.matches.forEach(jogo => {
-            const card = document.createElement('div');
-            card.className = 'card';
+    const container = document.getElementById('jogos');
+    container.innerHTML = '';
 
-            card.innerHTML = `
-                <h3>${jogo.homeTeam.name} x ${jogo.awayTeam.name}</h3>
-                <p>Status: <span class="status">${jogo.status}</span></p>
-                <p>Competição: ${jogo.competition.name}</p>
-            `;
+    dados.matches.forEach(jogo => {
 
-            container.appendChild(card);
-        });
-    } catch (erro) {
-        document.getElementById('jogos').innerHTML =
-            '<p>Erro ao carregar jogos.</p>';
-    }
+        let classe = "agendado";
+
+        if(jogo.status === "IN_PLAY"){
+            classe = "ao-vivo";
+        }
+
+        if(jogo.status === "FINISHED"){
+            classe = "encerrado";
+        }
+
+        const golsCasa =
+            jogo.score?.fullTime?.home ?? "-";
+
+        const golsFora =
+            jogo.score?.fullTime?.away ?? "-";
+
+        container.innerHTML += `
+        <div class="card ${classe}">
+            
+            <div class="times">
+
+                <div class="time">
+                    <img src="${jogo.homeTeam.crest}" alt="">
+                    <p>${jogo.homeTeam.shortName || jogo.homeTeam.name}</p>
+                </div>
+
+                <div class="placar">
+                    ${golsCasa} x ${golsFora}
+                </div>
+
+                <div class="time">
+                    <img src="${jogo.awayTeam.crest}" alt="">
+                    <p>${jogo.awayTeam.shortName || jogo.awayTeam.name}</p>
+                </div>
+
+            </div>
+
+            <div class="status">
+                ${jogo.status}
+            </div>
+
+            <div class="competicao">
+                ${jogo.competition.name}
+            </div>
+
+        </div>
+        `;
+    });
 }
 
 carregarJogos();

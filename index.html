@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -6,44 +7,174 @@
 <title>Fut Analytics</title>
 
 <style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
 body{
-    background:#111;
+    background:#0f172a;
     color:white;
     font-family:Arial,sans-serif;
-    margin:0;
     padding:20px;
 }
 
 h1{
     text-align:center;
-    color:#00ff66;
+    color:#22c55e;
+    margin-bottom:20px;
+}
+
+.palpites{
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:20px;
+}
+
+.palpites h2{
+    margin-bottom:10px;
+}
+
+.palpites p{
+    margin:6px 0;
+}
+
+#jogos{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
 }
 
 .card{
-    background:#222;
+    background:#1e293b;
+    border-radius:12px;
     padding:15px;
-    margin:10px 0;
-    border-radius:10px;
+}
+
+.ao-vivo{
+    border-left:5px solid red;
+}
+
+.encerrado{
+    border-left:5px solid #22c55e;
+}
+
+.agendado{
+    border-left:5px solid #f59e0b;
+}
+
+.times{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.time{
+    width:40%;
+    text-align:center;
+}
+
+.time img{
+    width:50px;
+    height:50px;
+}
+
+.placar{
+    font-size:28px;
+    font-weight:bold;
 }
 
 .status{
-    color:#00ff66;
+    text-align:center;
+    margin-top:10px;
+    font-weight:bold;
+}
+
+.competicao{
+    text-align:center;
+    color:#94a3b8;
+    margin-top:5px;
 }
 </style>
+
 </head>
 
 <body>
 
 <h1>⚽ FUT ANALYTICS</h1>
 
-<h2>Jogos do Dia</h2>
-
-<div class="card">
-    <h3>Em breve...</h3>
-    <p class="status">Integração com Football-Data.org em andamento.</p>
+<div class="palpites">
+    <h2>🎯 Central de Palpites</h2>
+    <p>🔥 Jogo em destaque: Bélgica x Egito</p>
+    <p>⚽ Ambas marcam: 72%</p>
+    <p>📈 Over 2.5 gols: 68%</p>
+    <p>🎯 Gol no 1º tempo: 74%</p>
+    <p>🥅 Favorito: Bélgica</p>
+    <p>🚩 Mais de 8.5 escanteios: 66%</p>
 </div>
 
-<p>Site publicado com sucesso na Vercel.</p>
+<div id="jogos">
+Carregando jogos...
+</div>
+
+<script>
+async function carregarJogos(){
+
+    const resposta = await fetch('/api/matches');
+    const dados = await resposta.json();
+
+    const container = document.getElementById('jogos');
+    container.innerHTML = '';
+
+    dados.matches.forEach(jogo => {
+
+        let classe = 'agendado';
+
+        if(jogo.status === 'IN_PLAY'){
+            classe = 'ao-vivo';
+        }
+
+        if(jogo.status === 'FINISHED'){
+            classe = 'encerrado';
+        }
+
+        const golsCasa = jogo.score?.fullTime?.home ?? '-';
+        const golsFora = jogo.score?.fullTime?.away ?? '-';
+
+        container.innerHTML += `
+        <div class="card ${classe}">
+            <div class="times">
+
+                <div class="time">
+                    <img src="${jogo.homeTeam.crest}">
+                    <p>${jogo.homeTeam.shortName || jogo.homeTeam.name}</p>
+                </div>
+
+                <div class="placar">
+                    ${golsCasa} x ${golsFora}
+                </div>
+
+                <div class="time">
+                    <img src="${jogo.awayTeam.crest}">
+                    <p>${jogo.awayTeam.shortName || jogo.awayTeam.name}</p>
+                </div>
+
+            </div>
+
+            <div class="status">${jogo.status}</div>
+
+            <div class="competicao">
+                ${jogo.competition.name}
+            </div>
+        </div>
+        `;
+    });
+}
+
+carregarJogos();
+</script>
 
 </body>
 </html>

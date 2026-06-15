@@ -19,31 +19,63 @@ h1{
     color:#00ff66;
 }
 
+#jogos{
+    margin-top:20px;
+}
+
 .card{
     background:#222;
     padding:15px;
-    margin:10px 0;
+    margin-bottom:15px;
     border-radius:10px;
+    border-left:4px solid #00ff66;
 }
 
 .status{
     color:#00ff66;
+    font-weight:bold;
 }
 </style>
 </head>
-
 <body>
 
 <h1>⚽ FUT ANALYTICS</h1>
 
 <h2>Jogos do Dia</h2>
 
-<div class="card">
-    <h3>Em breve...</h3>
-    <p class="status">Integração com Football-Data.org em andamento.</p>
+<div id="jogos">
+    <p>Carregando jogos...</p>
 </div>
 
-<p>Site publicado com sucesso na Vercel.</p>
+<script>
+async function carregarJogos() {
+    try {
+        const resposta = await fetch('/api/matches');
+        const dados = await resposta.json();
+
+        const container = document.getElementById('jogos');
+        container.innerHTML = '';
+
+        dados.matches.forEach(jogo => {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            card.innerHTML = `
+                <h3>${jogo.homeTeam.name} x ${jogo.awayTeam.name}</h3>
+                <p>Status: <span class="status">${jogo.status}</span></p>
+                <p>Competição: ${jogo.competition.name}</p>
+            `;
+
+            container.appendChild(card);
+        });
+    } catch (erro) {
+        document.getElementById('jogos').innerHTML =
+            '<p>Erro ao carregar jogos.</p>';
+    }
+}
+
+carregarJogos();
+</script>
 
 </body>
 </html>

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -15,7 +16,7 @@
 body{
     background:#0f172a;
     color:white;
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
     padding:20px;
 }
 
@@ -25,6 +26,21 @@ h1{
     margin-bottom:20px;
 }
 
+.palpites{
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:20px;
+}
+
+.palpites h2{
+    margin-bottom:10px;
+}
+
+.palpites p{
+    margin:6px 0;
+}
+
 #jogos{
     display:flex;
     flex-direction:column;
@@ -32,18 +48,9 @@ h1{
 }
 
 .card{
-    <div style="background:#1e293b;padding:20px;border-radius:12px;margin-bottom:20px;">
-    <h2>🎯 Central de Palpites</h2>
-
-    <div style="margin-top:10px;">
-        <p>🔥 Jogo em destaque: Bélgica x Egito</p>
-        <p>⚽ Ambas marcam: 72%</p>
-        <p>📈 Over 2.5 gols: 68%</p>
-        <p>🎯 Gol no 1º tempo: 74%</p>
-        <p>🥅 Favorito: Bélgica</p>
-        <p>🚩 Mais de 8.5 escanteios: 66%</p>
-    </div>
-</div>
+    background:#1e293b;
+    border-radius:12px;
+    padding:15px;
 }
 
 .ao-vivo{
@@ -62,7 +69,6 @@ h1{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin:10px 0;
 }
 
 .time{
@@ -90,28 +96,31 @@ h1{
     text-align:center;
     color:#94a3b8;
     margin-top:5px;
-    font-size:14px;
 }
 </style>
+
 </head>
 
 <body>
 
 <h1>⚽ FUT ANALYTICS</h1>
-<div style="background:#1e293b;padding:15px;border-radius:12px;margin-bottom:20px;">
-    <h2>🎯 Palpites do Fut Analytics</h2>
+
+<div class="palpites">
+    <h2>🎯 Central de Palpites</h2>
     <p>🔥 Jogo em destaque: Bélgica x Egito</p>
-<p>⚽ Ambas marcam: 72%</p>
-<p>📈 Over 2.5 gols: 68%</p>
-<p>🎯 Chance de gol no 1º tempo: 74%</p>
-<p>🥅 Time favorito: Bélgica</p>
+    <p>⚽ Ambas marcam: 72%</p>
+    <p>📈 Over 2.5 gols: 68%</p>
+    <p>🎯 Gol no 1º tempo: 74%</p>
+    <p>🥅 Favorito: Bélgica</p>
+    <p>🚩 Mais de 8.5 escanteios: 66%</p>
 </div>
+
 <div id="jogos">
-    Carregando jogos...
+Carregando jogos...
 </div>
 
 <script>
-async function carregarJogos() {
+async function carregarJogos(){
 
     const resposta = await fetch('/api/matches');
     const dados = await resposta.json();
@@ -121,29 +130,25 @@ async function carregarJogos() {
 
     dados.matches.forEach(jogo => {
 
-        let classe = "agendado";
+        let classe = 'agendado';
 
-        if(jogo.status === "IN_PLAY"){
-            classe = "ao-vivo";
+        if(jogo.status === 'IN_PLAY'){
+            classe = 'ao-vivo';
         }
 
-        if(jogo.status === "FINISHED"){
-            classe = "encerrado";
+        if(jogo.status === 'FINISHED'){
+            classe = 'encerrado';
         }
 
-        const golsCasa =
-            jogo.score?.fullTime?.home ?? "-";
-
-        const golsFora =
-            jogo.score?.fullTime?.away ?? "-";
+        const golsCasa = jogo.score?.fullTime?.home ?? '-';
+        const golsFora = jogo.score?.fullTime?.away ?? '-';
 
         container.innerHTML += `
         <div class="card ${classe}">
-            
             <div class="times">
 
                 <div class="time">
-                    <img src="${jogo.homeTeam.crest}" alt="">
+                    <img src="${jogo.homeTeam.crest}">
                     <p>${jogo.homeTeam.shortName || jogo.homeTeam.name}</p>
                 </div>
 
@@ -152,20 +157,17 @@ async function carregarJogos() {
                 </div>
 
                 <div class="time">
-                    <img src="${jogo.awayTeam.crest}" alt="">
+                    <img src="${jogo.awayTeam.crest}">
                     <p>${jogo.awayTeam.shortName || jogo.awayTeam.name}</p>
                 </div>
 
             </div>
 
-            <div class="status">
-                ${jogo.status}
-            </div>
+            <div class="status">${jogo.status}</div>
 
             <div class="competicao">
                 ${jogo.competition.name}
             </div>
-
         </div>
         `;
     });

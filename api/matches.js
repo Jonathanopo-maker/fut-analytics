@@ -1,21 +1,14 @@
-export default async function handler(req, res) {
-  try {
-    const response = await fetch(
-      "https://api.football-data.org/v4/matches",
-      {
-        headers: {
-          "X-Auth-Token": process.env.FOOTBALL_API_KEY,
-        },
-      }
-    );
+const myHeaders = new Headers();
+myHeaders.append("Accept", "application/json");
+myHeaders.append("Authorization", "Bearer <token>");
 
-    const data = await response.json();
+const requestOptions = {
+  method: "GET",
+  headers: myHeaders,
+  redirect: "follow"
+};
 
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({
-      error: "Erro ao buscar jogos",
-      details: error.message,
-    });
-  }
-}
+fetch("https://api.apify.com/v2/key-value-stores/:storeId/records/:recordKey", requestOptions)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.error(error));

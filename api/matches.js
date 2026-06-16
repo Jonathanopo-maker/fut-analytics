@@ -1,14 +1,10 @@
-const myHeaders = new Headers();
-myHeaders.append("Accept", "application/json");
-myHeaders.append("Authorization", "Bearer <token>");
+import { ApifyClient } from 'apify-client';
 
-const requestOptions = {
-  method: "GET",
-  headers: myHeaders,
-  redirect: "follow"
-};
+const apifyClient = new ApifyClient({
+    token: '<TOKEN>',
+});
+const run = await apifyClient
+    .run('<RUN ID>')
+    .get();
 
-fetch("https://api.apify.com/v2/key-value-stores/:storeId/records/:recordKey", requestOptions)
-  .then((response) => response.text())
-  .then((result) => console.log(result))
-  .catch((error) => console.error(error));
+console.log(run);
